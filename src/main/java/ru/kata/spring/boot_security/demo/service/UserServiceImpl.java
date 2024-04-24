@@ -1,13 +1,10 @@
 package ru.kata.spring.boot_security.demo.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.entity.Role;
@@ -16,14 +13,11 @@ import ru.kata.spring.boot_security.demo.repository.RoleRepository;
 import ru.kata.spring.boot_security.demo.repository.UserRepository;
 
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
-public class UserService implements UserDetailsService { //предоставляет по имни пользователя самого юзера
+public class UserServiceImpl implements UserService { //предоставляет по имни пользователя самого юзера
 
     private RoleRepository roleRepository;
     private UserRepository userRepository;
@@ -52,11 +46,8 @@ public class UserService implements UserDetailsService { //предоставл�
         if(user == null){
             throw new UsernameNotFoundException(String.format("User '%s' not found",username));
         }
-
-        return new org.springframework.security.core.userdetails.User(user.getUsername(),user.getPassword(),
-                user.getAuthorities());
+        return user;
     }
-
 
     public List<Role> listRoles() {
         return roleRepository.findAll();
@@ -66,8 +57,8 @@ public class UserService implements UserDetailsService { //предоставл�
         return userRepository.findAll();
     }
 
-    public Optional<User> getUserById(Long id) {
-        return userRepository.findById(id);
+    public User getUserById(Long id) {
+        return userRepository.getOne(id);
     }
     @Transactional
     public void saveUser(User user) {
@@ -80,15 +71,14 @@ public class UserService implements UserDetailsService { //предоставл�
     }
 
     @Transactional
-    public void edit(Long id, User updatedUser) {
-        Optional<User> toChange = userRepository.findById(id);
+    public void editUser(Long id, User updatedUser) {
+        User toChange = getUserById(id);
 
-        if (toChange.isPresent()) {
-            User user = toChange.get();
-            user.setUsername(updatedUser.getUsername());
-            user.setPassword(updatedUser.getPassword());
-            user.setRoles(updatedUser.getRoles());
-            userRepository.save(user);
+        if (toChange != null) {
+            toChange.setUsername(updatedUser.getUsername());
+            toChange.setPassword(updatedUser.getPassword());
+            toChange.setRoles(updatedUser.getRoles());
+            userRepository.save(toChange);
         }
     }
     @Transactional
