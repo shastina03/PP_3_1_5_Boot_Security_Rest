@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Login Page</title>
+</head>
+<body>
+
+<div class="container">
+
+        <form method="POST" action="/login">
+            <div class="text-center p-4">
+                <h4 style="margin-right: 40px;"><b>Please sign in</b></h4>
+                <form th:action="@{/login}" method="POST" id="loginForm">
+                    <div class="form-group col-1 col-lg-3 col-md-3 col-sm-6 mx-auto">
+
+                        <input type="text" class="form-control" id="usernameLoginInput" placeholder="Email address"
+                               name="username" required autofocus/>
+
+                    </div>
+                    <div class="form-group mt-1 col-1 col-lg-3 col-md-2 col-sm-6 mx-auto">
+                        <input type="password" class="form-control" id="passwordLoginInput" placeholder="Password"
+                               name="password" required/>
+                    </div>
+                    <div th:if="${param.error}"
+                         class="alert alert-danger col-1 col-lg-3 col-md-2 col-sm-6 mx-auto mt-2" role="alert">
+                        Invalid username or password.
+                    </div>
+                    <div th:if="${param.logout}"
+                         class="alert alert-success col-1 col-lg-3 col-md-2 col-sm-6 mx-auto mt-2">
+                        Logout successful: you have been logged out.
+                    </div>
+                    <div class="d-grid gap-2 col-1 col-lg-3 col-md-2 col-sm-6 mx-auto">
+                        <button type="submit" class="btn btn-primary mt-2">Sign in</button>
+                    </div>
+                </form>
+            </div>
+        </form>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+</body>
+</html>
