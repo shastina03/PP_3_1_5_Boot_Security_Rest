@@ -42,10 +42,6 @@ public class UserController {
         return "redirect:/login";
     }
 
-    /*@GetMapping()
-    public String pageForAuthenticatedUsers(Principal principal,Model model){
-        model.addAttribute("user", userService.findByUsername(principal.getName()));
-        return "user";
-    }*/
+
 
 }

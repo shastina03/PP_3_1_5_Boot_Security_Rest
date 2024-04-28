@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import ru.kata.spring.boot_security.demo.entity.Role;
 import ru.kata.spring.boot_security.demo.entity.User;
 import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
@@ -46,13 +47,18 @@ public class AdminController {
     }
 
     @PostMapping("/user-create")
-    public String createUser(User user) {
+    public String createUser(User user, @RequestParam String[] roles) {
+        for (String role: roles){
+            Role userRole = roleService.findByName(role);
+            user.getRoles().add(userRole);
+        }
         userService.saveUser(user);
         return "redirect:/admin";
     }
 
     @PatchMapping("/user-update/{id}")
     public String updateUser(@PathVariable("id")Long id, @ModelAttribute("user") User user) {
+
         userService.updateUser(user,id);
         return "redirect:/admin";
     }
