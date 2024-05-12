@@ -1,6 +1,9 @@
 package ru.kata.spring.boot_security.demo.controller;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -12,8 +15,10 @@ import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
 import java.security.Principal;
+import java.util.List;
+import java.util.Set;
 
-@Controller
+@RestController
 @RequestMapping("/admin")
 public class AdminController {
     private final UserService userService;
@@ -25,47 +30,39 @@ public class AdminController {
         this.roleService = roleService;
     }
 
-    @GetMapping()
-    public String usersInfo(Model model, Principal principal) {
-        model.addAttribute("authUser", userService.
-                findByUsername(principal.getName()));
-        model.addAttribute("authRoles", userService.
-                findByUsername(principal.getName()).getRoles());
-
-        model.addAttribute("users", userService.getAllUsers());
-        model.addAttribute("roles", roleService.getAllRoles());
-        return "adminPanel";
+    @GetMapping("/list")
+    public ResponseEntity<List<User>> usersInfo() {
+        return new ResponseEntity<>(userService.getAllUsers(),HttpStatus.OK);
+    }
+    @GetMapping("/roles")
+    public ResponseEntity<List<Role>> getAllRoles(){
+        return new ResponseEntity<>(roleService.getAllRoles(), HttpStatus.OK);
+    }
+    @GetMapping("/roles/{id}")
+    public ResponseEntity<Set<Role>> getUserRole(@PathVariable("id") Long id){
+        return new ResponseEntity<>(userService.getUserById(id).getRoles(),HttpStatus.OK);
     }
 
-    @GetMapping("/user-create")
-    public String createUserForm(Model model, Authentication authentication) {
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        model.addAttribute("currentUser", userService.findByUsername(userDetails.getUsername()));
-        model.addAttribute("roles", roleService.getAllRoles());
-        model.addAttribute("user", new User());
-        return "addUser";
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUserId(@PathVariable("id") Long id){
+        return new ResponseEntity<>(userService.getUserById(id), HttpStatus.OK);
     }
 
-    @PostMapping("/user-create")
-    public String createUser(User user, @RequestParam String[] roles) {
-        for (String role: roles){
-            Role userRole = roleService.findByName(role);
-            user.getRoles().add(userRole);
-        }
+    @PostMapping
+    public ResponseEntity<HttpStatus> createUser(@RequestBody User user) {
         userService.saveUser(user);
-        return "redirect:/admin";
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PatchMapping("/user-update/{id}")
-    public String updateUser(@PathVariable("id")Long id, @ModelAttribute("user") User user) {
-
+    @PatchMapping("/{id}")
+    public ResponseEntity<User> updateUser(@PathVariable("id")Long id, @RequestBody User user) {
         userService.updateUser(user,id);
-        return "redirect:/admin";
+        return ResponseEntity.ok(user);
     }
-    @DeleteMapping("/user-delete/{id}")
-    public String deleteUser(@PathVariable("id") Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable("id") Long id) {
         userService.deleteUser(id);
-        return "redirect:/admin";
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
 

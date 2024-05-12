@@ -30,6 +30,7 @@ public class User implements UserDetails {
     @Column(name = "password")
     private String password;
 
+    @Fetch(FetchMode.JOIN)
     @ManyToMany
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -52,6 +53,9 @@ public class User implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return getRoles();
     }
+    public String getShortRole() {
+        return roles.toString().substring(1, roles.toString().length() - 1);
+    } // проеобразование массива ролей в строку без начальных и конечных разделителей
 
     @Override
     public boolean isAccountNonExpired() {
@@ -128,19 +132,6 @@ public class User implements UserDetails {
 
     public void setAge(int age) {
         this.age = age;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return age == user.age && Objects.equals(id, user.id) && Objects.equals(firstName, user.firstName) && Objects.equals(lastName, user.lastName) && Objects.equals(username, user.username) && Objects.equals(password, user.password) && Objects.equals(roles, user.roles);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, firstName, lastName, age, username, password, roles);
     }
 
     @Override

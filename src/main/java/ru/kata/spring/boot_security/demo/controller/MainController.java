@@ -4,7 +4,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class LoginController {
+public class MainController {
+
+    @GetMapping("/admin")
+    public String adminPanel(){
+        return "adminPanel";
+    }
+    @GetMapping("/user")
+    public String userInfo(){
+        return "userList";
+    }
     @GetMapping("/login")
     public String loginForm(){
         return "login";

@@ -3,6 +3,7 @@ package ru.kata.spring.boot_security.demo.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,9 +14,10 @@ import ru.kata.spring.boot_security.demo.repository.UserRepository;
 
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
-public class UserServiceImpl implements UserService { //предоставляет по имни пользователя самого юзера
+public class UserServiceImpl implements UserService, UserDetailsService { //предоставляет по имни пользователя самого юзера
 
     private final UserRepository userRepository;
     private PasswordEncoder passwordEncoder;
@@ -28,18 +30,11 @@ public class UserServiceImpl implements UserService { //предоставляе
         this.userRepository = userRepository;
     }
 
-    public User findByUsername(String username) {
-        return userRepository.findByUsername(username);
-    }
 
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = findByUsername(username); //ищем юзера
-        if(user == null){
-            throw new UsernameNotFoundException(String.format("User '%s' not found",username));
-        }
-        return user;
+        return userRepository.findByUsername(username);
     }
 
     public List<User> getAllUsers() {
@@ -47,7 +42,8 @@ public class UserServiceImpl implements UserService { //предоставляе
     }
 
     public User getUserById(Long id) {
-        return userRepository.getOne(id);
+        Optional<User> foundUser = userRepository.findById(id);
+        return foundUser.orElse(null);
     }
 
     @Override
